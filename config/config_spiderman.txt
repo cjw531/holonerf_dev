@@ -1,0 +1,22 @@
+expname = spiderman_lightbulb_phonecam
+basedir = ./logs
+datadir = ../img_dataset/spiderman_lightbulb_phonecam
+dataset_type = llff
+
+factor = 4
+llffhold = 8
+
+N_rand = 1024
+N_samples = 64
+N_importance = 64
+
+use_viewdirs = True
+raw_noise_std = 1e0
+
+reduced_train = True
+reduced_train_factor = 0.5
+
+render_only = True
+render_hidden = True
+#render_test = True
+#center_n_rotate = True
