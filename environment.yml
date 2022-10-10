@@ -16,3 +16,9 @@ dependencies:
     - ipywidgets
     - tqdm
     - pycollada
+    - pandas
+    - opencv
+    - pip:
+      - lpips
+      - torch
+      - torchvision
