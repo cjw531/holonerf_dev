@@ -1,5 +1,3 @@
-from load_blender import load_blender_data
-from load_deepvoxels import load_dv_data
 from load_llff import load_llff_data
 from run_nerf_helpers import *
 import time
@@ -642,27 +640,10 @@ def train():
         print('NEAR FAR', near, far)
 
     elif args.dataset_type == 'blender':
-        images, poses, render_poses, hwf, i_split = load_blender_data(args.datadir, args.half_res, args.testskip)
-        print('Loaded blender', images.shape, render_poses.shape, hwf, args.datadir)
-        i_train, i_val, i_test = i_split
-
-        near = 2.
-        far = 6.
-
-        if args.white_bkgd:
-            images = images[..., :3]*images[..., -1:] + (1.-images[..., -1:])
-        else:
-            images = images[..., :3]
+        print('Unsupported dataset type: refer to the original NeRF', args.dataset_type, 'exiting')
 
     elif args.dataset_type == 'deepvoxels':
-        images, poses, render_poses, hwf, i_split = load_dv_data(scene=args.shape, basedir=args.datadir, testskip=args.testskip)
-
-        print('Loaded deepvoxels', images.shape, render_poses.shape, hwf, args.datadir)
-        i_train, i_val, i_test = i_split
-
-        hemi_R = np.mean(np.linalg.norm(poses[:, :3, -1], axis=-1))
-        near = hemi_R-1.
-        far = hemi_R+1.
+        print('Unsupported dataset type: refer to the original NeRF', args.dataset_type, 'exiting')
 
     else:
         print('Unknown dataset type', args.dataset_type, 'exiting')
