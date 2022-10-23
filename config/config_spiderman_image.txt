@@ -1,0 +1,4 @@
+refdir = ../img_dataset/spiderman_lightbulb_phonecam
+savedir = ../img_dataset/spiderman_20
+factor = 0.2
+

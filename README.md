@@ -1,4 +1,17 @@
-# NeRF With Tensorflow v2
+# HoloNeRF
+## Reduce Input Image Set
+In order to perform a quantitative analysis depending on the number of samples being trained, we provide a script to automatically reduce the number of input images.
+
+Refer to the config file: [`config_spiderman_image.txt`](./config/config_spiderman_image.txt)
+
+New reduced-sample image folder will be created by running:
+```
+$ python3 image_subset.py --config <PATH_TO_CONFIG>
+```
+
+<hr>
+
+## NeRF With Tensorflow v2
 This repository is forked from the [original NeRF repository](https://github.com/bmild/nerf). This repository modified the existing NeRF so that it can be compatible with Tensorflow 2.x. The code is tested with the following configuration: NVIDIA GeForce RTX 3090, and Tensorflow 2.8. For more dependency configurations, refer to the new [`environment.yml`](./environment.yml).
 
 Below is the original README.md from the NeRF project code.
