@@ -570,6 +570,8 @@ def config_parser():
     parser.add_argument("--reduced_train_factor", type=float, default=1.0,
                         help='training set will be reduced by this factor amount')
     parser.add_argument("--render_hidden", action='store_true',
+                        help='training set will be reduced')
+    parser.add_argument("--hidden_index", type=str,
                         help='render the hidden set instead of render_poses path')
     return parser
 
@@ -605,10 +607,8 @@ def train():
 
         i_val = i_test
         i_train = np.array([i for i in np.arange(int(images.shape[0])) if (i not in i_test and i not in i_val)])
-        if args.reduced_train == True:
-            idx_hidden_imgs = np.round(np.linspace(0, len(i_train) - 1, int((1 - args.reduced_train_factor) * len(i_train)))).astype(int)
-            i_train = np.delete(i_train, idx_hidden_imgs)
-            i_hidden = np.array([i for i in np.arange(int(images.shape[0])) if (i not in i_test and i not in i_val and i not in i_train)])
+        if args.render_hidden == True:
+            i_hidden = [int(item) for item in args.hidden_index.split(',')]
 
         # img files save into csv, shows list of images: relative location, index, set (train/val/test/hidden)
         if os.path.isfile(args.basedir + '/' + args.expname + '/filename_set.csv') == False:
