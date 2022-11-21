@@ -6,7 +6,7 @@ import argparse
 import colmap_read_model as read_model
 
 '''
-This script is taken from: https://github.com/Fyusion/LLFF
+This script is taken from: https://github.com/Fyusion/LLFF and modified by Jiwon Choi.
 
 @article{mildenhall2019llff,
   title={Local Light Field Fusion: Practical View Synthesis with Prescriptive Sampling Guidelines},
@@ -16,8 +16,7 @@ This script is taken from: https://github.com/Fyusion/LLFF
 }
 '''
 
-def gen_poses(basedir, match_type, factors=None):
-
+def gen_poses(basedir, factors=None):
     files_needed = ['{}.bin'.format(f)
                     for f in ['cameras', 'images', 'points3D']]
     if os.path.exists(os.path.join(basedir, 'sparse/0')):
@@ -26,7 +25,7 @@ def gen_poses(basedir, match_type, factors=None):
         files_had = []
     if not all([f in files_had for f in files_needed]):
         print('Need to run COLMAP')
-        run_colmap(basedir, match_type)
+        run_colmap(basedir)
     else:
         print('Don\'t need to run COLMAP')
 
@@ -44,55 +43,19 @@ def gen_poses(basedir, match_type, factors=None):
 
     return True
 
-def run_colmap(basedir, match_type):
-    
-    logfile_name = os.path.join(basedir, 'colmap_output.txt')
-    logfile = open(logfile_name, 'w')
-    
-    feature_extractor_args = [
-        'colmap', 'feature_extractor', 
-            '--database_path', os.path.join(basedir, 'database.db'), 
-            '--image_path', os.path.join(basedir, 'images'),
-            '--ImageReader.single_camera', '1',
-            # '--SiftExtraction.use_gpu', '0',
-    ]
-    feat_output = ( subprocess.check_output(feature_extractor_args, universal_newlines=True) )
-    logfile.write(feat_output)
-    print('Features extracted')
-
-    exhaustive_matcher_args = [
-        'colmap', match_type, 
-            '--database_path', os.path.join(basedir, 'database.db'), 
-    ]
-
-    match_output = ( subprocess.check_output(exhaustive_matcher_args, universal_newlines=True) )
-    logfile.write(match_output)
-    print('Features matched')
-    
-    p = os.path.join(basedir, 'sparse')
-    if not os.path.exists(p):
-        os.makedirs(p)
-
-    mapper_args = [
-        'colmap', 'mapper',
-            '--database_path', os.path.join(basedir, 'database.db'),
-            '--image_path', os.path.join(basedir, 'images'),
-            '--output_path', os.path.join(basedir, 'sparse'), # --export_path changed to --output_path in colmap 3.6
-            '--Mapper.num_threads', '16',
-            '--Mapper.init_min_tri_angle', '4',
-            '--Mapper.multiple_models', '0',
-            '--Mapper.extract_colors', '0',
-    ]
-
-    map_output = ( subprocess.check_output(mapper_args, universal_newlines=True) )
-    logfile.write(map_output)
-    logfile.close()
-    print('Sparse map created')
-    
-    print( 'Finished running COLMAP, see {} for logs'.format(logfile_name) )
+def run_colmap(basedir):
+    os.system(f'colmap feature_extractor \
+                --database_path ' + basedir + '/database.db \
+                --image_path ' + basedir + '/images')
+    os.system(f'colmap exhaustive_matcher \
+                --database_path ' + basedir + '/database.db')
+    os.system(f'mkdir ' + basedir + '/sparse')
+    os.system(f'colmap mapper \
+                --database_path ' + basedir + '/database.db \
+                --image_path ' + basedir + '/images \
+                --output_path ' + basedir + '/sparse')
 
 def load_colmap_data(realdir):
-
     camerasfile = os.path.join(realdir, 'sparse/0/cameras.bin')
     camdata = read_model.read_cameras_binary(camerasfile)
 
@@ -238,12 +201,7 @@ def minify(basedir, factors=[], resolutions=[]):
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    # parser.add_argument('--match_type', type=str, 
-    #                     default='exhaustive_matcher', help='type of matcher used.  Valid options: \
-    #                     exhaustive_matcher sequential_matcher.  Other matchers not supported at this time')
-    parser.add_argument('scenedir', type=str,
-                        help='input scene directory')
+    parser.add_argument('scenedir', type=str, help='input scene directory')
     args = parser.parse_args()
     
-    # scene_dir = ''
-    gen_poses(args.scenedir, 'exhaustive_matcher')
+    gen_poses(args.scenedir)
