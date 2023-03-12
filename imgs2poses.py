@@ -201,7 +201,7 @@ def minify(basedir, factors=[], resolutions=[]):
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('scenedir', type=str, help='input scene directory')
+    parser.add_argument('--scenedir', type=str, help='input scene directory')
     args = parser.parse_args()
     
     gen_poses(args.scenedir)
